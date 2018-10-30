@@ -1,0 +1,48 @@
+first I followed this!!
+
+https://mkdev.me/en/posts/rails-5-vue-js-how-to-stop-worrying-and-love-the-frontend
+
+to install yarn I did this
+npm install -g yarn
+
+and then made the changes according to the above site.
+
+but I also had to do these steps:
+wow, had to create /config/webpack/custom.js and the stuff in it for this shit to work..
+module.exports = {
+  resolve: {
+    alias: {
+      vue$: 'vue/dist/vue.esm.js'
+    }
+  }
+}
+
+
+AND had to update /config/webpack/environment.js otherwise the shit won't fucking work!
+const { environment } = require('@rails/webpacker')
+const vue =  require('./loaders/vue')
+const customConfig = require('./custom')
+
+environment.config.set('resolve.extensions', ['.foo', '.bar'])
+environment.config.set('output.filename', '[name].js')
+
+// Merge custom config
+environment.config.merge(customConfig)
+
+// Delete a property
+environment.config.delete('output.chunkFilename')
+
+environment.loaders.append('vue', vue)
+module.exports = environment
+
+Your config/application.rb has the following line:
+config.active_record.raise_in_transactional_callbacks = true
+comment that shit out
+
+THIS IS HOW YOU START WEBPACK!!!
+./bin/webpack-dev-server
+
+lastly install these
+yarn add vuetify --save
+yarn add axios --save
+yarn add vuelidate --save
