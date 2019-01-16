@@ -37,17 +37,7 @@ class OmniauthController < ApplicationController
     store_hash = store_hash_via_payload
     stores = Store.where(owner_id: store_hash["user"]["id"])
     unless stores.nil?
-      unless stores.amazons.nil?
-        stores.each do |store|
-          marketplace = store.amazon.marketplace
-          seller_id = store.amazon.seller_id
-          auth_token = store.amazon.auth_token
-          create_subscription_client(marketplace, seller_id, auth_token)
-          delete_sqs_subscription(marketplace)
-          @bc_hash = store.bc_hash
-          store.nil? ? Rails.logger.info("no store to destroy!") : store.destroy
-        end
-      end
+      stores.destroy_all
     end
     clear_session
     head :ok
@@ -56,12 +46,12 @@ class OmniauthController < ApplicationController
 private
 
   def set_carrier
-    HTTParty.post("https://api.bigcommerce.com/stores/#{bc_hash}/v2/shipping/carrier/3/scope", 
+    HTTParty.post("https://api.bigcommerce.com/stores/#{bc_hash}/v2/shipping/carrier/37/scope", 
                   :headers => create_headers_in_auth_controller(token))
   end
   
   def remove_carrier
-    HTTParty.delete("https://api.bigcommerce.com/stores/#{bc_hash}/v2/shipping/carrier/3/scope", 
+    HTTParty.delete("https://api.bigcommerce.com/stores/#{bc_hash}/v2/shipping/carrier/37/scope", 
                   :headers => create_headers_in_auth_controller(token))
   end
 

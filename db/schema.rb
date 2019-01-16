@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181030154653) do
+ActiveRecord::Schema.define(version: 20181206134739) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,7 @@ ActiveRecord::Schema.define(version: 20181030154653) do
     t.text "seller_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "country_code"
   end
 
   create_table "speeds", force: :cascade do |t|
@@ -38,7 +39,8 @@ ActiveRecord::Schema.define(version: 20181030154653) do
     t.datetime "updated_at", null: false
     t.integer "store_id"
     t.boolean "enabled", default: false
-    t.index ["store_id", "shipping_speed"], name: "index_speeds_on_store_id_and_shipping_speed", unique: true
+    t.text "marketplace"
+    t.index ["marketplace", "shipping_speed", "store_id"], name: "index_speeds_on_marketplace_and_shipping_speed_and_store_id", unique: true
   end
 
   create_table "stores", force: :cascade do |t|
@@ -60,6 +62,8 @@ ActiveRecord::Schema.define(version: 20181030154653) do
     t.integer "bc_zone_id"
     t.integer "store_id"
     t.boolean "selected", default: false
+    t.string "seller_id"
+    t.string "marketplace"
     t.index ["zone_name", "bc_zone_id", "store_id"], name: "index_zones_on_zone_name_and_bc_zone_id_and_store_id", unique: true
   end
 

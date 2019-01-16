@@ -71,5 +71,14 @@ class ApplicationController < ActionController::Base
    response.headers.delete('X-Frame-Options')
   end
   
+  def create_amazon_client(marketplace, seller_id, auth_token)
+    keys = which_amazon_keys_to_use?(marketplace)
+    MWS::FulfillmentOutboundShipment::Client.new(
+                                              marketplace:           "#{marketplace}",
+                                              merchant_id:           "#{seller_id}",
+                                              aws_access_key_id:     "#{keys[:access_key]}",
+                                              aws_secret_access_key: "#{keys[:secret_access_key]}",
+                                              auth_token:            "#{auth_token}")
+  end
   
 end

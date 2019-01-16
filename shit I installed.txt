@@ -45,4 +45,5 @@ THIS IS HOW YOU START WEBPACK!!!
 lastly install these
 yarn add vuetify --save
 yarn add axios --save
-yarn add vuelidate --save
+yarn add vuelidate --save ## this one doesn't like props..
+yarn add vee-validate --save

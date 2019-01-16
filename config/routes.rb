@@ -10,14 +10,16 @@ Rails.application.routes.draw do
   get '/uninstall' => 'omniauth#uninstall'
   
   post 'amazon_credentials_check', to: 'amazon_creds#amazon_credentials_check'
-  get 'return_amazon_credentials' => 'amazon_creds#return_amazon_credentials' 
+  get 'return_amazon_credentials' => 'amazon_creds#return_amazon_credentials'
+  post 'remove_amazon_credentials', to: 'amazon_creds#remove_amazon_credentials'
   
   get 'return_currency_info' => 'currency#return_currency_info' 
   
   post 'save_shipping_info', to: 'speed#save_shipping_info'
   post 'delete_speed_internally', to: 'speed#delete_speed_internally'
   get 'return_speed_info' => 'speed#return_speed_info'
-  get 'number_of_speeds_to_return' => 'speed#number_of_speeds_to_return'  
+  get 'number_of_speeds_to_return' => 'speed#number_of_speeds_to_return'
+  get 'return_marketplaces' => 'speed#return_marketplaces'
   
   get 'return_zone_info' => 'zone#return_zone_info'
   post 'receive_zone_info' => 'zone#receive_zone_info'

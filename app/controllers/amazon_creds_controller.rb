@@ -15,10 +15,19 @@ class AmazonCredsController < ApplicationController
       render json: {are_the_amazon_creds_good: client_status}
   end
   
-  def assemble_zones
+  def remove_amazon_credentials
+    parse_params
+    amazon_to_remove = Amazon.find_by(marketplace: marketplace, seller_id: seller_id, auth_token: auth_token)
+    amazon_to_remove.delete
+    head :ok
+  end
+  
+  def assemble_zones(seller_id, marketplace)
     zones = []
-    current_store.zones.each do |zone|
-      zones << {name: zone.zone_name, id: zone.bc_zone_id}
+    if !(current_store.zones.empty?)
+      current_store.zones.where(selected: true, seller_id: seller_id, marketplace: marketplace).each do |zone|
+        zones << {name: zone.zone_name, value: zone.bc_zone_id}
+      end
     end
     return zones
   end
@@ -30,11 +39,11 @@ class AmazonCredsController < ApplicationController
         amazon_credentials << {auth_token: amazon.auth_token,
                               seller_id: amazon.seller_id,
                               marketplace: amazon.marketplace,
-                              zones: assemble_zones}
+                              zones: assemble_zones(amazon.seller_id, amazon.marketplace)}
       end
       return amazon_credentials
     else
-      empty_credentials = {seller_id: ""}.to_json
+      empty_credentials = [{seller_id: ""}].to_json
       return empty_credentials
     end
   end
@@ -44,7 +53,7 @@ class AmazonCredsController < ApplicationController
   end
   
   private
-  
+
   def parse_params
     @marketplace = params["marketplace"].upcase
     @seller_id = params["seller_id"].upcase

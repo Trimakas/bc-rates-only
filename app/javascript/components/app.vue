@@ -13,25 +13,30 @@
 <script>
 import welcome from '../components/welcome.vue';
 import amazon_credentials from '../components/amazon_credentials.vue';
+import speeds from '../components/speeds.vue';
 
 import 'images/background.png';
 import {dataShare} from '../packs/application.js';
 import axios from 'axios';
 
+var url = "https://bc-only-rates-trimakas.c9users.io";
+
   export default {
     data: function () {
       return {
-        selected: 'amazon_credentials'
+        selected: 'speeds',
+        amazonCredsArray: []
       }
     },
   components: {
     welcome,
-    amazon_credentials
+    amazon_credentials,
+    speeds
   },
   created() {
     dataShare.$on('whereToGo', (whereToGo) => {
       this.selected = whereToGo;
-    });    
+    });
   }
   }
 </script>

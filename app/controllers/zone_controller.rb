@@ -4,7 +4,7 @@ class ZoneController < ApplicationController
   include ShippingZoneConcern
   
   BODY = {name: "FBA Shipping by ByteStand", 
-          type: "carrier_3", 
+          type: "carrier_37", 
           settings: {carrier_options: {delivery_services: [], packaging: []}}, 
           enabled: true, 
           handling_fees:{"fixed_surcharge"=>0}}.to_json
@@ -17,6 +17,7 @@ class ZoneController < ApplicationController
   
   def receive_zone_info
     @zones = return_zones_from_params
+    add_amazon_info_to_zones
     get_shipping_methods_for_zones(@zones)
     add_rate_to_shipping_zone
     update_selected_zones
@@ -26,16 +27,29 @@ class ZoneController < ApplicationController
   
   private
   
+  def add_amazon_info_to_zones
+    zones.each do |selected_zone_id|
+      current_zone = current_zone(selected_zone_id)
+      current_zone.update(seller_id: seller_id_from_params,
+                          marketplace: marketplace_from_params)
+    end
+  end
+  
+  def marketplace_from_params
+    params["marketplace"]
+  end
+  
+  def seller_id_from_params
+    params["seller_id"]
+  end
+  
+  #just need the zone id is all
   def return_zones_from_params
     just_zones = []
-    unless params["zone_info"][0].is_a?(Fixnum)
-      params["zone_info"].each do |zone_id|
-        just_zones << zone_id["value"]
-      end
-      return just_zones
-    else
-      return params["zone_info"]
+    params["zones"].each do |zone|
+      just_zones << zone["value"]
     end
+    return just_zones
   end
   
   def get_shipping_methods_for_zones(zones)
@@ -49,7 +63,7 @@ class ZoneController < ApplicationController
   
   def does_fba_shipping_exist_in_zone(shipping_methods, zone)
     shipping_methods.each do |method|
-      if method["type"] == "carrier_3"
+      if method["type"] == "carrier_37"
         remove_fba_ship(method["id"], zone)
       end
     end
@@ -72,19 +86,25 @@ class ZoneController < ApplicationController
   
   def update_selected_zones
     zones.each do |selected_zone_id|
-      current_zone = current_store.zones.find_by(bc_zone_id: selected_zone_id)
+      current_zone = current_zone(selected_zone_id)
       current_zone.update(selected: true)
     end
   end
   
   def update_not_selected_zones
-    all_zone_ids = current_store.zones.pluck(:bc_zone_id)
+    all_zone_ids = current_store.zones.where(seller_id: seller_id_from_params, marketplace: marketplace_from_params).pluck(:bc_zone_id)
     zones_to_de_select = all_zone_ids - zones
-    get_shipping_methods_for_zones(zones_to_de_select)
-    zones_to_de_select.each do |set_zone_to_false|
-      false_zone = current_store.zones.find_by(bc_zone_id: set_zone_to_false)
-      false_zone.update(selected: false)
+    if zones_to_de_select.length > 0
+      get_shipping_methods_for_zones(zones_to_de_select)
+      zones_to_de_select.each do |set_zone_to_false|
+        false_zone = current_store.zones.find_by(bc_zone_id: set_zone_to_false)
+        false_zone.update(selected: false)
+      end
     end
+  end
+  
+  def current_zone(zone_id)
+    current_store.zones.find_by(bc_zone_id: zone_id)
   end
   
 end

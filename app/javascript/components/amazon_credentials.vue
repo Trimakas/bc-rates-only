@@ -2,22 +2,33 @@
   <v-app>
     <credential_instructions class="no_background"></credential_instructions>
     <credential_details
+      :amazonCredsArray="amazonCredsArray"
+      @updateCredsArray="updateCredsArray"
+      @addComponent="" 
+      @removeComponent=""
       xs12
       class="no_background"
-      id="amazon_credentials"
-      v-for="(item, index) in components"
-      :index="index"
-      :key="'fourth' + index "
-      :seller_id="seller_id"
-      :selected_marketplace="selected_marketplace"
-      :token="token"
       >
     </credential_details>
+    <v-container fluid grid-list-lg>
+      <v-layout row wrap class="text-xs-center">
+        <v-flex xs6>
+          <v-btn
+            @click="sendBackToSpeeds"
+            block
+            outline
+            large 
+            class="my_dark_purple_outline_btn negative_top_margin" 
+            dark 
+            >I'm Finished Entering Marketplaces
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-app>  
 </template>
 
 <script>
-/*global top*/
 
 import {dataShare} from '../packs/application.js';
 import credential_instructions from '../components/credential_instructions.vue';
@@ -29,9 +40,7 @@ var url = "https://bc-only-rates-trimakas.c9users.io";
 export default {
   data: function() {
     return {
-      seller_id: "",
-      selected_marketplace: null,
-      token: "",
+      amazonCredsArray: [],
       components: [],
     };
   },
@@ -39,36 +48,32 @@ export default {
     credential_instructions,
     credential_details
   },
+  methods: {
+  updateCredsArray() {
+    let self = this;
+    self.amazonCredsArray = [];
+    axios.get(url + "/return_amazon_credentials").then(response => {
+      response.data.forEach(function(element) {
+      self.amazonCredsArray.push(element);
+      });
+    }); 
+  },
+  sendBackToSpeeds() {
+    dataShare.$emit('whereToGo', "speeds");
+  },
+  },
   created() {
     dataShare.$on('addComponent', (data) => {
-      this.components.push(data);
+      this.amazonCredsArray.push(data);
     });
     dataShare.$on('removeComponent', (data) => {
-      this.components.pop();
+      this.amazonCredsArray.pop();
     });
     let self = this;
-    axios.get(url + '/return_zone_info').then(response => {
-      response.data.forEach(function(zone) {
-        if(zone.selected){
-          var zone_selected_hash = {text: zone.zone_name, value: zone.bc_zone_id};
-          self.selected_zones.push(zone_selected_hash); 
-        }
-        var zone_hash = {text: zone.zone_name, value: zone.bc_zone_id};
-        self.zones.push(zone_hash);
+    axios.get(url + "/return_amazon_credentials").then(response => {
+      response.data.forEach(function(element) {
+        self.amazonCredsArray.push(element);
       });
-    });
-    axios.get(url + '/return_amazon_credentials').then(response => {
-      // debugger;
-      response.data.forEach(function(element){
-        self.seller_id = element.seller_id;
-        self.selected_marketplace = element.marketplace;      
-        self.token = element.auth_token;
-        self.components.push(1);
-      });
-      if(self.seller_id == ""){
-        self.show_cancel_button = false;
-      }
-      self.show_cancel_button;
     });
   }
 };  
@@ -76,6 +81,15 @@ export default {
 </script>
 
 <style>
+
+.my_dark_purple_outline_btn {
+  background-color: #68007d !important;
+  color: #68007d !important;
+}
+
+.negative_top_margin {
+  margin-top: -35px !important;
+}
 
 .dark-green-button {
   background-color: #43A047 !important;
@@ -112,6 +126,7 @@ export default {
 
 .lightblue {
   background-color: #d9d6e1 !important;
+  padding: 15px;
 }
 
 .lightpurple {

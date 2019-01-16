@@ -10,10 +10,10 @@
 import Vue from 'vue/dist/vue.esm';
 import App from '../components/app.vue'
 import Vuetify from 'vuetify';
-import Vuelidate from 'vuelidate';
+import Vuelidate from 'vuelidate'
 
+Vue.use(Vuelidate)
 Vue.use(Vuetify);
-Vue.use(Vuelidate);
 
 document.addEventListener('DOMContentLoaded', () => {
   document.body.appendChild(document.createElement('app'))
