@@ -1,0 +1,100 @@
+appName: bc-rates-only
+
+imageRepo: gcr.io/copper-mender-240813/bc-rates-only
+imageTag: cache-latest
+imagePullPolicy: Always
+
+configMapName: bc-rates-only-env
+
+containerPort1: 3000
+containerPort2: 8080
+
+serviceName: bc-rates-only-nodeport
+serviceType: ClusterIP
+servicePort: 80
+
+puma:
+  bc-rates-only:
+    name: bc-rates-only
+    command: bundle exec puma -C config/puma.rb -b 'tcp://0.0.0.0:3000'
+    replicaCount: 1
+    memoryRequest: 256Mi
+    memoryLimit: 1024Mi
+    cpuRequest: 50m
+    cpuLimit: 150m
+
+bc-rates-only_tmp_dir: /home/app
+bc-rates-only_log_dir: /home/app/log/production.log
+
+# workers:
+#   - name: sidekiq
+#     command: bundle exec sidekiq -C config/sidekiq.yml
+#     memoryRequest: 200Mi
+#     memoryLimit: 1200Mi
+#     cpuRequest: 50m
+#     cpuLimit: 150m
+
+# Values to configure endpoint for nginx-ingress
+nginxIngress:
+  name: ingress-nginx
+  rules:
+    - host: bc-rates-only-shipping.k8s.bytestand.com
+      servicePort: 3000
+      path: /
+  tls:
+    hosts:
+      - k8s.bytestand.com
+      - '*.k8s.bytestand.com'
+    secretName: bytestand-cert-letsencrypt
+# jobs:
+  ### REQUIRED ###
+  # - name: job1
+  #   image:
+  #     repository: gcr.io/copper-mender-240813/bc-rates-only
+  #     tag: cache-latest
+  #     imagePullPolicy: IfNotPresent
+  #   schedule: "*/2 * * * *"
+  #   failedJobsHistoryLimit: 1
+  #   successfulJobsHistoryLimit: 3
+  #   concurrencyPolicy: Forbid
+  #   restartPolicy: OnFailure
+  ### OPTIONAL ###
+    # env:
+    # - name: ENV_VAR
+    #   value: ENV_VALUE
+    # command: ["echo"]
+    # args:
+    # - "Hello"
+    # - "World!"
+    # resources:
+    #   limits:
+    #     cpu: <cpu_count>
+    #     memory: <memory_count>
+    #   requests:
+    #     cpu: <cpu_count>
+    #     memory: <memory_count>
+    # nodeSelector:
+    #   key: <value>
+    # tolerations:
+    # - effect: NoSchedule
+    #   operator: Exists
+    # volumes:
+    #   - name: config-mount
+    #     configMap:
+    #       name: configmap-name
+    #       items:
+    #         - key: configuration.yml
+    #           path: configuration.yml
+    # volumeMounts:
+    #   - name: config-mount
+    #     mountPath: /etc/config
+    # affinity:
+    #   nodeAffinity:
+    #     requiredDuringSchedulingIgnoredDuringExecution:
+    #       nodeSelectorTerms:
+    #       - matchExpressions:
+    #         - key: kubernetes.io/e2e-az-name
+    #           operator: In
+    #           values:
+    #           - e2e-az1
+    #           - e2e-az2
