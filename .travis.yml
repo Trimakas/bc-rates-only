@@ -41,7 +41,7 @@ before_script:
   - yes | gcloud auth configure-docker
   # - docker pull $FULL_CACHE_IMAGE_NAME
   # - docker build --cache-from $FULL_CACHE_IMAGE_NAME -f Dockerfile -t $FULL_IMAGE_NAME --network=host .
-  - docker build -f Dockerfile -t $FULL_IMAGE_NAME --network=host
+  - docker build -f Dockerfile -t $FULL_IMAGE_NAME --network=host .
   - docker push $FULL_IMAGE_NAME
   - yes | gcloud container images add-tag ${FULL_IMAGE_NAME} gcr.io/$PROJECT_ID/${IMAGE_NAME}:${TRAVIS_COMMIT}
   - yes | gcloud container images add-tag ${FULL_IMAGE_NAME} ${FULL_CACHE_IMAGE_NAME}
