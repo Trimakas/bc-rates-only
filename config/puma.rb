@@ -29,3 +29,4 @@ on_worker_boot do
     require "active_record"
     ActiveRecord::Base.connection.disconnect! rescue ActiveRecord::ConnectionNotEstablished
     ActiveRecord::Base.establish_connection(YAML.load_file("#{app_dir}/config/database.yml")[rails_env])
+end
