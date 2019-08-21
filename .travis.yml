@@ -26,7 +26,7 @@ env:
     - CLUSTER_NAME=staging
 
 before_install:
-  - openssl aes-256-cbc -K $encrypted_0a13908867db_key -iv $encrypted_0a13908867db_iv -in secrets.tar.enc -out secrets.tar -d
+  - openssl aes-256-cbc -K $encrypted_8d40f47b9cda_key -iv $encrypted_8d40f47b9cda_iv -in secrets.tar.enc -out secrets.tar -d
   - tar xvf secrets.tar
   - echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
   - curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
