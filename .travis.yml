@@ -47,4 +47,4 @@ before_script:
 
 script:
   - gcloud container clusters get-credentials $CLUSTER_NAME
-  - helm upgrade --install fba-shipping-refactor-staging --values charts/values.yaml --set imageTag=${TRAVIS_COMMIT} --wait charts/
+  - helm upgrade --install bc-rates-only-staging --values charts/values.yaml --set imageTag=${TRAVIS_COMMIT} --wait charts/
