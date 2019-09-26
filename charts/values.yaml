@@ -12,6 +12,10 @@ containerPort2: 8080
 serviceName: bc-rates-only-nodeport
 serviceType: ClusterIP
 
+job:
+  name: bc-rates-migrate-db
+  command: bundle exec rake db:migrate
+
 puma:
   bc-rates-only:
     name: bc-rates-only
