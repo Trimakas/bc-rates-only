@@ -23,6 +23,7 @@ yarn-debug.log*
 
 # Ignore application configuration
 /config/application.yml
-charts/templates/configmap.yml
 secrets.tar
 travis-ci-role.json
+/charts/secrets.yaml
+/charts/secrets.prod.yaml
